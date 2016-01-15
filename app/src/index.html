@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>JSPM Babel ES6 test</title>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Meta-DSP</h1>
+    </div>
+
+    <!-- Prod -->
+    <!-- <script src="../dist/scripts/bundle.min.js"></script> -->
+
+    <!-- Dev -->
+    <script src="../../jspm_packages/system.js"></script>
+    <script src="scripts/config.js"></script>
+    <script src="scripts/vendors.js"></script>
+    <script>
+      System.import('scripts/bundle.js');
+    </script>
+  </body>
+</html>
