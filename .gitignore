@@ -4,7 +4,6 @@ node_modules/
 jspm_packages/
 
 app/dist
-app/src/scripts/config.js
 app/src/scripts/vendors.js
 app/src/scripts/bundle.js
 app/src/scripts/bundle.js.map

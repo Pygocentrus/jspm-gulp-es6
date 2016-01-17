@@ -1,3 +1,3 @@
-import $ from 'jquery';
+import utils from './common/utils';
 
-console.log($);
+console.log(utils.foo('hello'));

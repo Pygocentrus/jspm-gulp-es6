@@ -1,16 +1,21 @@
 {
-  "name": "test",
+  "name": "jspm-test",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "deps": "npm i && jspm i",
-    "js": "jspm bundle-sfx app/src/scripts/app app/src/scripts/bundle.js",
-    "buildjs": "jspm bundle-sfx app/src/scripts/app app/dist/bundle.min.js --minify --skip-source-maps"
+    "bundlejs": "jspm bundle app/src/scripts/app app/src/scripts/bundle.js",
+    "buildjs": "jspm bundle-sfx app/src/scripts/app app/dist/scripts/bundle.min.js --minify --skip-source-maps"
   },
   "author": "",
   "license": "ISC",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "jspm": "^0.16.23"
+  },
   "jspm": {
+    "configFile": "app/src/scripts/config.js",
     "dependencies": {
       "jquery": "npm:jquery@^2.2.0",
       "lodash": "npm:lodash@^4.0.0"
@@ -20,15 +25,5 @@
       "babel-runtime": "npm:babel-runtime@^5.8.24",
       "core-js": "npm:core-js@^1.1.4"
     }
-  },
-  "devDependencies": {
-    "babelify": "^7.2.0",
-    "gulp": "^3.9.0",
-    "gulp-concat": "^2.6.0",
-    "gulp-jspm-build": "0.0.13",
-    "gulp-rename": "^1.2.2",
-    "gulp-sourcemaps": "^1.6.0",
-    "gulp-uglify": "^1.5.1",
-    "jspm": "^0.16.23"
   }
 }
