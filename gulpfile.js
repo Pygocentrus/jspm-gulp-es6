@@ -1,12 +1,18 @@
 var gulp         = require('gulp'),
+    plumber      = require('gulp-plumber'),
+    notify       = require('gulp-notify'),
+    rename       = require('gulp-rename'),
     browserSync  = require('browser-sync'),
     gulpSequence = require('gulp-sequence'),
     htmlmin      = require('gulp-htmlmin'),
     htmlreplace  = require('gulp-html-replace'),
+    sass         = require('gulp-sass'),
+    minifyCSS    = require('gulp-cssnano'),
     exec         = require('child_process').execSync,
+    stream       = browserSync.stream,
     reload       = browserSync.reload;
 
-var APP = 'app/src/',
+var APP  = 'app/src/',
     DIST = 'app/dist/';
 
 /* Regular JS task, wrapping JSPM CLI */
@@ -16,6 +22,23 @@ gulp.task('bundle-js', function() {
       throw err;
     }
   });
+});
+
+/* Compile sass into CSS & auto-inject into browsers */
+gulp.task('bundle-styles', function () {
+  return gulp.src(APP + 'styles/main.scss')
+    .pipe(plumber({ errorHandler: onError }))
+    .pipe(sass())
+    .pipe(rename('app.css'))
+    .pipe(gulp.dest(APP + 'styles'))
+    .pipe(stream());
+});
+
+gulp.task('build-styles', ['bundle-styles'], function() {
+  return gulp.src(APP + 'styles/app.css')
+    .pipe(minifyCSS({ keepSpecialComments: 0, advanced: false }))
+    .pipe(rename('bundle.min.css'))
+    .pipe(gulp.dest(DIST + 'styles'));
 });
 
 /* JS build task */
@@ -31,16 +54,17 @@ gulp.task('build-js', ['bundle-js'], function () {
 gulp.task('build-html', function () {
   return gulp.src(APP + 'index.html')
     .pipe(htmlreplace({
-        scripts: 'scripts/bundle.min.js',
+        styles: 'styles/bundle.min.css',
+        scripts: 'scripts/bundle.min.js'
       }))
     .pipe(htmlmin({ collapseWhitespace: true }))
     .pipe(gulp.dest(DIST));
 });
 
 /* Build task */
-gulp.task('build', gulpSequence('build-js', 'build-html'));
+gulp.task('build', gulpSequence('build-js', 'build-styles', 'build-html'));
 
-gulp.task('serve', ['bundle-js'], function() {
+gulp.task('serve', ['bundle-js', 'bundle-styles'], function() {
   /* Start local static server */
   browserSync({
     notify: false,
@@ -61,8 +85,24 @@ gulp.task('serve', ['bundle-js'], function() {
     '!' + APP + 'scripts/bundle.min.js'
   ], ['bundle-js', reload]);
 
+  /* Watch styles */
+  gulp.watch([
+    APP + 'styles/**/*.scss'
+  ], ['bundle-styles']);
+
   /* Watch html */
   gulp.watch([
     APP + '*.html'
   ], reload);
 });
+
+/* Errors handler */
+function onError (err) {
+  notify.onError({
+    title:    "Gulp",
+    subtitle: "Failure!",
+    message:  "Error: <%= error.message %>"
+  })(err);
+
+  this.emit('end');
+};
