@@ -1,62 +1,59 @@
-var gulp = require('gulp'),
-    exec = require('child_process').execSync,
-    jspm = require('gulp-jspm-build');
+var gulp         = require('gulp'),
+    browserSync  = require('browser-sync'),
+    gulpSequence = require('gulp-sequence'),
+    exec         = require('child_process').execSync,
+    reload       = browserSync.reload;
 
-gulp.task('jspm', function(){
-  jspm({
-    bundleOptions: {
-      minify: false,
-      mangle: false
-    },
-    bundles: [
-      {
-        src: 'app/src/scripts/app.js - jquery - lodash',
-        dst: 'bundle.js'
-      },
-      {
-        src: 'jquery + lodash',
-        dst: 'vendors.js',
-        options: {
-          mangle: false
-        }
+/* Regular JS task, wrapping JSPM CLI */
+gulp.task('js', function() {
+  exec('npm run js:bundle', function (err, stdout, stderr) {
+    if (err) {
+      throw err;
+    }
+    else {
+      console.log('Build complete!');
+    }
+  });
+});
+
+/* JS build task */
+gulp.task('buildjs', ['js'], function () {
+  exec('npm run js:build', function (err, stdout, stderr) {
+    if (err) {
+      throw err;
+    }
+    else {
+      console.log('Build complete!');
+    }
+  });
+});
+
+/* Build task */
+gulp.task('build', gulpSequence('buildjs'));
+
+gulp.task('serve', ['js'], function() {
+  /* Start local static server */
+  browserSync({
+    notify: false,
+    files: ['app/src/scripts/bundle'],
+    server: {
+      baseDir: ["./app/src", "./app/dist"],
+      routes: {
+        "/jspm_packages": "jspm_packages"
       }
-    ]
-  })
-  .pipe(gulp.dest('app/src/scripts'));
-});
+    }
+  });
 
-gulp.task('jspm:build', function(){
-  jspm({
-    bundleOptions: {
-      minify: true,
-      mangle: true
-    },
-    bundles: [
-      { src: 'app/src/scripts/app.js', dst: 'bundle.min.js' },
-    ],
-    bundleSfx: true
-  })
-  .pipe(gulp.dest('app/dist/scripts'));
-});
+  /* Watch scripts */
+  gulp.watch([
+    'app/src/scripts/**/*.js',
+    '!app/src/scripts/config.js',
+    '!app/src/scripts/bundle.js',
+    '!app/src/scripts/bundle.min.js'
+  ], ['js', reload]);
 
-// gulp.task('js', function() {
-//   exec('npm run js', function (err, stdout, stderr) {
-//     if (err) {
-//       throw err;
-//     }
-//     else {
-//       console.log('Build complete!');
-//     }
-//   });
-// });
-//
-// gulp.task('buildjs', function () {
-//   exec('npm run buildjs', function (err, stdout, stderr) {
-//     if (err) {
-//       throw err;
-//     }
-//     else {
-//       console.log('Build complete!');
-//     }
-//   });
-// });
+  /* Watch html */
+  gulp.watch([
+    'app/src/*.html'
+  ], reload);
+});

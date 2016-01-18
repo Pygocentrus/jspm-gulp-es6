@@ -5,13 +5,17 @@
   "main": "index.js",
   "scripts": {
     "deps": "npm i && jspm i",
-    "bundlejs": "jspm bundle app/src/scripts/app app/src/scripts/bundle.js",
-    "buildjs": "jspm bundle-sfx app/src/scripts/app app/dist/scripts/bundle.min.js --minify --skip-source-maps"
+    "serve": "gulp serve",
+    "build": "gulp build",
+    "js:bundle": "jspm bundle app/src/scripts/app app/src/scripts/bundle.js",
+    "js:build": "jspm bundle-sfx app/src/scripts/app app/dist/scripts/bundle.min.js --minify --skip-source-maps"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "browser-sync": "^2.11.1",
     "gulp": "^3.9.0",
+    "gulp-sequence": "^0.4.4",
     "jspm": "^0.16.23"
   },
   "jspm": {
