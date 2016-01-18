@@ -9,9 +9,7 @@
       <h1>This is a test app</h1>
     </div>
 
-    <!-- Dist -->
-    <!-- <script src="../scripts/bundle.min.js"></script> -->
-
+    <!-- build:scripts -->
     <!-- Dev -->
     <script src="/jspm_packages/system.js"></script>
     <script src="scripts/config.js"></script>
@@ -19,5 +17,9 @@
     <script>
       System.import('scripts/app.js');
     </script>
+    <!-- Prod -->
+    <!-- <script src="../scripts/bundle.min.js"></script> -->
+    <!-- endbuild -->
+
   </body>
 </html>
