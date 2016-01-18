@@ -12,8 +12,9 @@ var gulp         = require('gulp'),
     stream       = browserSync.stream,
     reload       = browserSync.reload;
 
-var APP  = 'app/src/',
-    DIST = 'app/dist/';
+var APP   = 'app/src/',
+    DIST  = 'app/dist/',
+    PROXY = '';
 
 /* Regular JS task, wrapping JSPM CLI */
 gulp.task('bundle-js', function() {
@@ -65,17 +66,27 @@ gulp.task('build-html', function () {
 gulp.task('build', gulpSequence('build-js', 'build-styles', 'build-html'));
 
 gulp.task('serve', ['bundle-js', 'bundle-styles'], function() {
-  /* Start local static server */
-  browserSync({
+
+  // BrowserSync options
+  var options = {
     notify: false,
-    files: [APP + 'scripts/bundle'],
-    server: {
+    files: [APP + 'scripts/bundle']
+  };
+
+  // Allow proxying the app through a custom server
+  if (PROXY && PROXY !== '') {
+    options['proxy'] = PROXY;
+  } else {
+    options['server'] = {
       baseDir: ['./' + APP, './' + DIST],
       routes: {
         "/jspm_packages": "jspm_packages"
       }
-    }
-  });
+    };
+  }
+
+  /* Start local static server */
+  browserSync(options);
 
   /* Watch scripts */
   gulp.watch([
