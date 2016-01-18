@@ -7,7 +7,9 @@ var gulp         = require('gulp'),
     htmlmin      = require('gulp-htmlmin'),
     htmlreplace  = require('gulp-html-replace'),
     sass         = require('gulp-sass'),
+    autoprefix   = require('gulp-autoprefixer'),
     minifyCSS    = require('gulp-cssnano'),
+    sourcemaps   = require('gulp-sourcemaps'),
     exec         = require('child_process').execSync,
     stream       = browserSync.stream,
     reload       = browserSync.reload;
@@ -29,8 +31,12 @@ gulp.task('bundle-js', function() {
 gulp.task('bundle-styles', function () {
   return gulp.src(APP + 'styles/main.scss')
     .pipe(plumber({ errorHandler: onError }))
-    .pipe(sass())
-    .pipe(rename('app.css'))
+    .pipe(sourcemaps.init())
+      .pipe(sass())
+      .pipe(autoprefix({ browsers: ['last 2 versions'] }))
+      .pipe(rename('app.css'))
+      .pipe(gulp.dest(APP + 'styles'))
+    .pipe(sourcemaps.write())
     .pipe(gulp.dest(APP + 'styles'))
     .pipe(stream());
 });
